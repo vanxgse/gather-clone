@@ -427,7 +427,7 @@ export class PlayApp extends App {
     }
 
     private displayInitialChatMessage = async () => {
-        const supabase = createClient()
+        const supabase = await createClient()
         const { data: { session } } = await supabase.auth.getSession()
         if (!session) return
         let channelName = ''
