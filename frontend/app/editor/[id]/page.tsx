@@ -3,8 +3,9 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Editor from '../Editor'
 
-export default async function RealmEditor({ params }: { params: { id: string } }) {
+export default async function RealmEditor({ params }: { params: Promise<{ id: string }> }) {
 
+    const { id } = await params
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -12,7 +13,7 @@ export default async function RealmEditor({ params }: { params: { id: string } }
         return redirect('/signin')
     }
 
-    const { data, error } = await supabase.from('realms').select('id, name, owner_id, map_data').eq('id', params.id).single()
+    const { data, error } = await supabase.from('realms').select('id, name, owner_id, map_data').eq('id', id).single()
     // Show not found page if we are not the owner or no data is returned
     if (!data) {
         return <NotFound />

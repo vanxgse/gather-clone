@@ -4,8 +4,9 @@ import ManageChild from '../ManageChild'
 import NotFound from '../../not-found'
 import { request } from '@/utils/backend/requests'
 
-export default async function Manage({ params }: { params: { id: string } }) {
+export default async function Manage({ params }: { params: Promise<{ id: string }> }) {
 
+    const { id } = await params
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -15,7 +16,7 @@ export default async function Manage({ params }: { params: { id: string } }) {
         return redirect('/signin')
     }
 
-    const { data, error } = await supabase.from('realms').select('id, name, owner_id, map_data, share_id, only_owner').eq('id', params.id).single()
+    const { data, error } = await supabase.from('realms').select('id, name, owner_id, map_data, share_id, only_owner').eq('id', id).single()
     // Show not found page if no data is returned
     if (!data) {
         return <NotFound />

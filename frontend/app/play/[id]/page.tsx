@@ -7,7 +7,10 @@ import PlayClient from '../PlayClient'
 import { updateVisitedRealms } from '@/utils/supabase/updateVisitedRealms'
 import { formatEmailToName } from '@/utils/formatEmailToName'
 
-export default async function Play({ params, searchParams }: { params: { id: string }, searchParams: { shareId: string } }) {
+export default async function Play({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ shareId: string }> }) {
+
+    const { id } = await params
+    const { shareId } = await searchParams
 
     const supabase = await createClient()
     const { data: { session } } = await supabase.auth.getSession()
@@ -16,7 +19,7 @@ export default async function Play({ params, searchParams }: { params: { id: str
     if (!session || !user) {
         return redirect('/signin')
     }
-    const { data, error } = !searchParams.shareId ? await supabase.from('realms').select('map_data, owner_id, name').eq('id', params.id).single() : await getPlayRealmData(session.access_token, searchParams.shareId)
+    const { data, error } = !shareId ? await supabase.from('realms').select('map_data, owner_id, name').eq('id', id).single() : await getPlayRealmData(session.access_token, shareId)
     const { data: profile, error: profileError } = await supabase.from('profiles').select('skin').eq('id', user.id).single()
     // Show not found page if no data is returned
     if (!data || !profile) {
@@ -30,18 +33,18 @@ export default async function Play({ params, searchParams }: { params: { id: str
 
     let skin = profile.skin
 
-    if (searchParams.shareId && realm.owner_id !== user.id) {
-        updateVisitedRealms(session.access_token, searchParams.shareId)
+    if (shareId && realm.owner_id !== user.id) {
+        updateVisitedRealms(session.access_token, shareId)
     }
 
     return (
-        <PlayClient 
-            mapData={map_data} 
-            username={formatEmailToName(user.user_metadata.email)} 
-            access_token={session.access_token} 
-            realmId={params.id} 
-            uid={user.id} 
-            shareId={searchParams.shareId || ''} 
+        <PlayClient
+            mapData={map_data}
+            username={formatEmailToName(user.user_metadata.email)}
+            access_token={session.access_token}
+            realmId={id}
+            uid={user.id}
+            shareId={shareId || ''}
             initialSkin={skin}
             name={realm.name}
         />
