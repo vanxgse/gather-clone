@@ -10,7 +10,8 @@ import { formatEmailToName } from '@/utils/formatEmailToName'
 export default async function Play({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ shareId: string }> }) {
 
     const { id } = await params
-    const { shareId } = await searchParams
+    const { shareId: rawShareId } = await searchParams
+    const shareId = rawShareId && rawShareId !== 'null' ? rawShareId : undefined
 
     const supabase = await createClient()
     const { data: { session } } = await supabase.auth.getSession()
