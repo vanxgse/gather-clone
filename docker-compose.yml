@@ -16,6 +16,6 @@ services:
     env_file:
       - ./frontend/.env.local
     ports:
-      - "3000:3000"
+      - "3004:3000"
     depends_on:
       - backend
