@@ -10,8 +10,14 @@ services:
   frontend:
     build:
       context: ./frontend
-      env_file:
-        - ./frontend/.env.local
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY
+        - NEXT_PUBLIC_BASE_URL
+        - NEXT_PUBLIC_BACKEND_URL
+        - NEXT_PUBLIC_AGORA_APP_ID
+        - APP_CERTIFICATE
+        - SERVICE_ROLE
     restart: always
     env_file:
       - ./frontend/.env.local
