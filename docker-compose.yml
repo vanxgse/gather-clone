@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3002:3002"
+
+  frontend:
+    build:
+      context: ./frontend
+      env_file:
+        - ./frontend/.env.local
+    restart: always
+    env_file:
+      - ./frontend/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
